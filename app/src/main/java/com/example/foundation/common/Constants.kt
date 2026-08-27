@@ -12,6 +12,7 @@ object Constants {
     const val CODE_CAPSLOCK = -4
     const val CODE_DELETE = -5
     const val CODE_SETTINGS = -6
+    const val CODE_NUMPAD = -7
     const val CODE_SPACE = 32
     const val CODE_ENTER = 10
     const val CODE_TAB = 9

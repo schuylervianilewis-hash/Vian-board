@@ -13,7 +13,8 @@ class KeyboardLayoutBuilder {
         ALPHA_UPPER,
         ALPHA_CAPSLOCK,
         SYMBOLS_1,
-        SYMBOLS_2
+        SYMBOLS_2,
+        NUMBER_PAD
     }
 
     /**
@@ -24,7 +25,8 @@ class KeyboardLayoutBuilder {
         height: Float,
         mode: LayoutMode,
         showNumberRow: Boolean = true,
-        currencySymbol: String = "$"
+        currencySymbol: String = "$",
+        keyMargin: Float = 4f
     ): List<Key> {
         val keys = mutableListOf<Key>()
         if (width <= 0 || height <= 0) return keys
@@ -32,7 +34,6 @@ class KeyboardLayoutBuilder {
         val rows = getRowSpecs(mode, showNumberRow, currencySymbol)
         val rowCount = rows.size
         val rowHeight = height / rowCount
-        val keyMargin = 3f
 
         for (rowIndex in 0 until rowCount) {
             val rowSpec = rows[rowIndex]
@@ -52,7 +53,8 @@ class KeyboardLayoutBuilder {
                     top + rowHeight - keyMargin
                 )
 
-                val moreKeys = MoreKeySpec.getMoreKeysFor(spec.label, spec.code)
+                val isUppercase = mode == LayoutMode.ALPHA_UPPER || mode == LayoutMode.ALPHA_CAPSLOCK
+                val moreKeys = MoreKeySpec.getMoreKeysFor(spec.label, isUppercase)
                 keys.add(
                     Key(
                         code = spec.code,
@@ -130,7 +132,7 @@ class KeyboardLayoutBuilder {
             )
             rows.add(r4Keys)
         } else if (mode == LayoutMode.SYMBOLS_1) {
-            // Symbols 1 Layout
+            // Symbols 1 Layout (HeliBoard Standard)
             val r1 = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "0")
             rows.add(r1.map { KeySpec(it[0].code, it, weight = 1.0f) })
 
@@ -146,14 +148,15 @@ class KeyboardLayoutBuilder {
 
             val r4Keys = listOf(
                 KeySpec(Constants.CODE_SWITCH_ALPHA_SYMBOL, "ABC", weight = 1.4f, isFunctional = true),
+                KeySpec(Constants.CODE_NUMPAD, "1234", weight = 1.2f, isFunctional = true),
                 KeySpec(','.code, ",", weight = 1.0f),
-                KeySpec(Constants.CODE_SPACE, "", weight = 4.6f),
+                KeySpec(Constants.CODE_SPACE, "", weight = 3.6f),
                 KeySpec('.'.code, ".", weight = 1.0f),
                 KeySpec(Constants.CODE_ENTER, "↵", weight = 1.4f, isFunctional = true)
             )
             rows.add(r4Keys)
-        } else {
-            // Symbols 2 Layout
+        } else if (mode == LayoutMode.SYMBOLS_2) {
+            // Symbols 2 Layout (HeliBoard Standard)
             val r1 = listOf("~", "`", "|", "•", "√", "π", "÷", "×", "¶", "∆")
             rows.add(r1.map { KeySpec(it[0].code, it, weight = 1.0f) })
 
@@ -169,12 +172,56 @@ class KeyboardLayoutBuilder {
 
             val r4Keys = listOf(
                 KeySpec(Constants.CODE_SWITCH_ALPHA_SYMBOL, "ABC", weight = 1.4f, isFunctional = true),
+                KeySpec(Constants.CODE_NUMPAD, "1234", weight = 1.2f, isFunctional = true),
                 KeySpec('<'.code, "<", weight = 1.0f),
-                KeySpec(Constants.CODE_SPACE, "", weight = 4.6f),
+                KeySpec(Constants.CODE_SPACE, "", weight = 3.6f),
                 KeySpec('>'.code, ">", weight = 1.0f),
                 KeySpec(Constants.CODE_ENTER, "↵", weight = 1.4f, isFunctional = true)
             )
             rows.add(r4Keys)
+        } else {
+            // Dedicated Calculator/PIN Number Pad (Exact HeliBoard 5-Column Matrix)
+            // Row 1: + (hint: (), 1, 2, 3, % (hint: currency)
+            val r1 = listOf(
+                KeySpec('+'.code, "+", hintLabel = "(", weight = 1.0f, isFunctional = true),
+                KeySpec('1'.code, "1", weight = 1.5f),
+                KeySpec('2'.code, "2", weight = 1.5f),
+                KeySpec('3'.code, "3", weight = 1.5f),
+                KeySpec('%'.code, "%", hintLabel = currencySymbol, weight = 1.0f, isFunctional = true)
+            )
+            rows.add(r1)
+
+            // Row 2: - (hint: )), 4, 5, 6, _ (hint: …)
+            val r2 = listOf(
+                KeySpec('-'.code, "-", hintLabel = ")", weight = 1.0f, isFunctional = true),
+                KeySpec('4'.code, "4", weight = 1.5f),
+                KeySpec('5'.code, "5", weight = 1.5f),
+                KeySpec('6'.code, "6", weight = 1.5f),
+                KeySpec('_'.code, "_", hintLabel = "…", weight = 1.0f, isFunctional = true)
+            )
+            rows.add(r2)
+
+            // Row 3: * (hint: /), 7, 8, 9, ⌫
+            val r3 = listOf(
+                KeySpec('*'.code, "*", hintLabel = "/", weight = 1.0f, isFunctional = true),
+                KeySpec('7'.code, "7", weight = 1.5f),
+                KeySpec('8'.code, "8", weight = 1.5f),
+                KeySpec('9'.code, "9", weight = 1.5f),
+                KeySpec(Constants.CODE_DELETE, "⌫", weight = 1.0f, isFunctional = true)
+            )
+            rows.add(r3)
+
+            // Row 4: ABC, , (hint: …), ?123, 0, = (hint: ≠), : (hint: ·), ↵
+            val r4 = listOf(
+                KeySpec(Constants.CODE_SWITCH_ALPHA_SYMBOL, "ABC", weight = 1.0f, isFunctional = true),
+                KeySpec(','.code, ",", hintLabel = "…", weight = 0.7f, isFunctional = true),
+                KeySpec(Constants.CODE_SWITCH_ALPHA_SYMBOL, "?123", weight = 0.9f, isFunctional = true),
+                KeySpec('0'.code, "0", weight = 1.6f),
+                KeySpec('='.code, "=", hintLabel = "≠", weight = 0.8f, isFunctional = true),
+                KeySpec(':'.code, ":", hintLabel = "·", weight = 0.6f, isFunctional = true),
+                KeySpec(Constants.CODE_ENTER, "↵", weight = 0.9f, isFunctional = true)
+            )
+            rows.add(r4)
         }
 
         return rows

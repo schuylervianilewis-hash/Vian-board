@@ -268,6 +268,119 @@
 - **Deviation**: None.
 - **Follow-up**: Push/export to GitHub to complete the APK compilation and release build.
 
+## Entry 027
+- **Timestamp**: 2026-08-27T03:50:00-07:00
+- **Summary**: Implemented WindowInsets padding, solid container background, and key visual contrast polish for Phase 1 IME.
+- **Exact Files Touched**:
+  - `/app/src/main/java/com/example/ime/VianBoardService.kt`
+  - `/app/src/main/java/com/example/keyboard/internal/MainKeyboardView.kt`
+  - `/app/src/main/java/com/example/keyboard/internal/KeyboardLayoutBuilder.kt`
+- **What was actually done**:
+  1. Configured dynamic `ViewCompat.setOnApplyWindowInsetsListener` on the root IME container to ingest `navigationBars()` insets and apply bottom padding, preventing the bottom keyboard row from colliding with Android 3-button and gesture navigation bars.
+  2. Implemented `onComputeInsets` in `VianBoardService` to accurately report content and visible top insets to the window manager.
+  3. Added solid `#11111B` canvas backdrop and `#181825` container surfaces to `VianBoardService` and `MainKeyboardView`.
+  4. Refined key colors and margins with `#313244` normal keys, `#1E1E2E` functional keys, `#585B70` pressed keys, and responsive `keyMargin` dp calculations.
+- **How it was verified**: Verified via `compile_applet` build success.
+- **Deviation**: None.
+- **Follow-up**: Export/push repository to GitHub to build the updated APK and verify on device.
+
+## Entry 028
+- **Timestamp**: 2026-08-27T04:03:30-07:00
+- **Summary**: Created Phase 2 mini-phases execution plan in blueprint/MINI_PHASES_PHASE_2.md.
+- **Exact Files Touched**:
+  - `/blueprint/MINI_PHASES_PHASE_2.md`
+- **What was actually done**: Authored structured 3-part execution plan breaking Phase 2 into atomic units: 2.1 (Multi-Layer Symbol Engine & Caps Lock), 2.2 (Long-Press More Keys Popup), and 2.3 (Tactile Spacebar Cursor & Backspace Swipe-to-Delete Gestures).
+- **How it was verified**: Not code-related (blueprint documentation created).
+- **Deviation**: None.
+- **Follow-up**: Await user direction to begin implementation of Mini-Phase 2.1.
+
+## Entry 029
+- **Timestamp**: 2026-08-27T04:14:00-07:00
+- **Summary**: Implemented Mini-Phase 2.1 Multi-Layer Symbol Engine, Shift/Caps Lock Long-Press, and Dedicated Number Pad.
+- **Exact Files Touched**:
+  - `/app/src/main/java/com/example/foundation/common/Constants.kt`
+  - `/app/src/main/java/com/example/keyboard/internal/KeyboardLayoutBuilder.kt`
+  - `/app/src/main/java/com/example/keyboard/internal/MainKeyboardView.kt`
+  - `/app/src/main/java/com/example/keyboard/internal/PointerTracker.kt`
+  - `/app/src/main/java/com/example/ime/VianBoardService.kt`
+- **What was actually done**:
+  1. Expanded `KeyboardLayoutBuilder` with full HeliBoard-standard layouts for `SYMBOLS_1` (`?123`), `SYMBOLS_2` (`=\<`), and dedicated calculator/PIN `NUMBER_PAD` (`1234` stacked button).
+  2. Added top number row (`1..0`) by default across alphabet modes.
+  3. Integrated long-press detection in `PointerTracker` via MainLooper `Handler` (300ms default) with movement cancellation threshold.
+  4. Implemented Shift State Machine in `VianBoardService`: single tap toggles temporary uppercase (auto-reverting on character commit), long-press Shift locks uppercase (`ALPHA_CAPSLOCK`) until Shift is tapped again.
+  5. Added HeliBoard-style visual states in `MainKeyboardView`: outlined arrow for unshifted, `#89B4FA` active arrow for shifted, and `⇪` with underline lock bar for Caps Lock.
+- **How it was verified**: Verified via `compile_applet` build success.
+- **Deviation**: None.
+- **Follow-up**: Push to GitHub to test Mini-Phase 2.1 on device, then proceed to Mini-Phase 2.2 (More Keys Popup).
+
+## Entry 030
+- **Timestamp**: 2026-08-27T04:21:45-07:00
+- **Summary**: Aligned dedicated NUMBER_PAD layout to exact HeliBoard 5-column matrix from reference screenshot.
+- **Exact Files Touched**:
+  - `/app/src/main/java/com/example/keyboard/internal/KeyboardLayoutBuilder.kt`
+  - `/app/src/main/java/com/example/keyboard/internal/MainKeyboardView.kt`
+  - `/app/src/main/java/com/example/ime/VianBoardService.kt`
+- **What was actually done**:
+  1. Restructured `NUMBER_PAD` in `KeyboardLayoutBuilder.kt` into the exact 5-column HeliBoard matrix: Left column (`+`, `-`, `*`), 3 Center number columns (`1..9` with large 1.5x width), Right column (`%`, `_`, `⌫`), and Bottom row (`ABC`, `,`, `?123`, `0`, `=`, `:`, `↵`).
+  2. Ingested exact secondary hint labels: `+` with `(`, `-` with `)`, `*` with `/`, `%` with currency, `=` with `≠`, `:` with `·`, and `,` with `…`.
+  3. Added `numberPadDigitLabelPaint` in `MainKeyboardView.kt` for large `26sp` display numerals on number keys.
+  4. Configured automatic numpad activation on `EditorInfo.TYPE_CLASS_NUMBER` and `EditorInfo.TYPE_CLASS_PHONE` in `VianBoardService.kt`.
+- **How it was verified**: Verified via `compile_applet` build success.
+- **Deviation**: None.
+- **Follow-up**: Test updated Numpad on device, then proceed to Mini-Phase 2.2.
+## Entry 031
+- **Timestamp**: 2026-08-27T05:37:45-07:00
+- **Summary**: Implemented Mini-Phase 2.2 Long-Press "More Keys" Accent & Symbol Popup, Comma/Period strips, and Numpad Security Vault hook.
+- **Exact Files Touched**:
+  - `/app/src/main/java/com/example/keyboard/internal/MoreKeySpec.kt`
+  - `/app/src/main/java/com/example/keyboard/internal/PointerTracker.kt`
+  - `/app/src/main/java/com/example/keyboard/internal/MainKeyboardView.kt`
+  - `/app/src/main/java/com/example/keyboard/internal/KeyboardLayoutBuilder.kt`
+  - `/app/src/main/java/com/example/ime/VianBoardService.kt`
+- **What was actually done**:
+  1. Expanded `MoreKeySpec` to map complete accent suites for vowels (`a`, `e`, `i`, `o`, `u`, `y`), consonants (`c`, `n`, `s`, `z`, `l`, `d`, `t`), numbers `1..0` (fractions/superscripts), 7-option comma `,` popup, comprehensive period `.` punctuation strip, and global currencies (`$`, `€`, `₹`, etc.).
+  2. Implemented Canvas-rendered floating MoreKey popup card in `MainKeyboardView` with `#181825` container, `#45475A` border, and `#89B4FA` active hovered selection.
+  3. Integrated horizontal drag tracking across popup candidates in `PointerTracker` and `MainKeyboardView`, committing the selected character on release.
+  4. Wired `Constants.CODE_NUMPAD` (`1234` key) long-press to display the Security Vault (Vian Vault Phase 4) offline placeholder feedback.
+- **How it was verified**: Verified via `compile_applet` build success.
+- **Deviation**: None.
+- **Follow-up**: Test More Keys popup and long-press actions on device, then proceed to Mini-Phase 2.3 (Tactile Spacebar Cursor Glide & Backspace Swipe-to-Delete Gestures).
+
+## Entry 032
+- **Timestamp**: 2026-08-27T05:56:45-07:00
+- **Summary**: Implemented Comma Long-Press Power Tools Quick Menu (Settings, Log Keeper, Personal Vault, Security Vault, Prompt List, Clipboard, One-Handed, Emoji, Voice).
+- **Exact Files Touched**:
+  - `/app/src/main/java/com/example/keyboard/internal/MoreKeySpec.kt`
+  - `/app/src/main/java/com/example/ime/VianBoardService.kt`
+- **What was actually done**:
+  1. Updated comma `,` long-press popup in `MoreKeySpec` to display the exact 9-tool power user hub: `⚙` (Settings), `🪵` (Log Keeper), `🔐` (Personal Vault), `🛡` (Security Vault), `📝` (Prompt List), `📋` (Clipboard), `✋` (One-Handed), `😀` (Emoji), `🎙` (Voice Input).
+  2. Implemented routing in `VianBoardService.onMoreKeySelected`:
+     - `⚙`: Launches `MainActivity` configuration.
+     - `🪵`: Launches `MainActivity` with Log Keeper / Diagnostics.
+     - `🔐`, `🛡`, `📝`, `📋`, `✋`, `😀`, `🎙`: Display clean, informative placeholder toasts for Phase 4 modular features without crashes or typing disruptions.
+- **How it was verified**: Verified via `compile_applet` build success.
+- **Deviation**: None.
+- **Follow-up**: Test Comma Quick Menu on device, then proceed to Mini-Phase 2.3.
+
+## Entry 033
+- **Timestamp**: 2026-08-27T06:40:45-07:00
+- **Summary**: Implemented Mini-Phase 2.3 Tactile Spacebar Cursor Glide & Backspace Swipe-to-Delete Gestures.
+- **Exact Files Touched**:
+  - `/app/src/main/java/com/example/keyboard/internal/PointerTracker.kt`
+  - `/app/src/main/java/com/example/keyboard/internal/MainKeyboardView.kt`
+  - `/app/src/main/java/com/example/ime/RichInputConnection.kt`
+  - `/app/src/main/java/com/example/ime/VianBoardService.kt`
+- **What was actually done**:
+  1. Updated `PointerTracker` to accurately distinguish Spacebar horizontal cursor sliding ($\Delta X$) and Backspace swipe-to-delete scrubbing with dedicated gesture release lifecycle (`onBackspaceSwipeRelease()`).
+  2. Extended `RichInputConnection` with selection management (`setSelection`, `getSelectedText`, `deleteSelectedText`, `getTextBeforeCursor`, `getTextAfterCursor`).
+  3. Implemented trackpad-style Spacebar cursor sliding in `VianBoardService` with fine-grained step calibration and tactile haptic ticks (`KEYBOARD_TAP`).
+  4. Implemented word-by-word Backspace swipe-to-delete with real-time text highlight selection expansion during drag, micro-haptic feedback on each word boundary crossed, safe abort if dragged back to origin, and instant batch deletion on finger lift (`CONFIRM` haptic).
+- **How it was verified**: Verified via `compile_applet` build success.
+- **Deviation**: None.
+- **Follow-up**: Test tactile gestures on device, then proceed to Phase 3 (Dictionary Engine & Suggestion Logic).
+
+
+
 
 
 

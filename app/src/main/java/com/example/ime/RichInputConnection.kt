@@ -45,9 +45,31 @@ class RichInputConnection(
         inputConnection?.deleteSurroundingText(charsToDelete, 0)
     }
 
+    fun getTextBeforeCursor(n: Int = 1000): String {
+        return inputConnection?.getTextBeforeCursor(n, 0)?.toString() ?: ""
+    }
+
+    fun getTextAfterCursor(n: Int = 1000): String {
+        return inputConnection?.getTextAfterCursor(n, 0)?.toString() ?: ""
+    }
+
+    fun getSelectedText(): String {
+        return inputConnection?.getSelectedText(0)?.toString() ?: ""
+    }
+
+    fun setSelection(start: Int, end: Int) {
+        inputConnection?.setSelection(start, end)
+    }
+
+    fun deleteSelectedText() {
+        val ic = inputConnection ?: return
+        // Committing empty string replaces the active selection
+        ic.commitText("", 1)
+    }
+
     fun deleteLastWord() {
         val ic = inputConnection ?: return
-        val textBefore = ic.getTextBeforeCursor(32, 0)?.toString() ?: ""
+        val textBefore = ic.getTextBeforeCursor(64, 0)?.toString() ?: ""
         if (textBefore.isEmpty()) return
 
         var index = textBefore.length - 1
