@@ -1,0 +1,8 @@
+{
+  "name": "Vian Board",
+  "description": "Lightweight, privacy-first AOSP keyboard with Day-1 diagnostics and micro-gestures",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
