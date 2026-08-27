@@ -238,6 +238,16 @@
 - **Deviation**: None.
 - **Follow-up**: Push to GitHub to trigger successful APK build release.
 
+## Entry 024
+- **Timestamp**: 2026-08-26T23:22:00-07:00
+- **Summary**: Updated GitHub Actions build workflow to use setup-gradle with explicit gradle-version and direct execution.
+- **Exact Files Touched**:
+  - `/.github/workflows/build_apk.yml`
+- **What was actually done**: Configured `gradle/actions/setup-gradle@v3` with `gradle-version: 8.7` and updated the build step to run `gradle assembleDebug --no-daemon`, completely eliminating any dependency on wrapper jar classes (`GradleWrapperMain`).
+- **How it was verified**: Verified via `compile_applet` success.
+- **Deviation**: None.
+- **Follow-up**: Export/push to GitHub to build and download the debug APK artifact.
+
 
 
 
