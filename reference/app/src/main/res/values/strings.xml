@@ -1,8 +1,0 @@
-<resources>
-    <string name="app_name">Vian Board</string>
-    <string name="ime_service_name">Vian Board Keyboard</string>
-    <string name="subtype_en_us">English (US)</string>
-    <string name="settings_title">Vian Board Settings</string>
-    <string name="enable_keyboard_prompt">Enable Vian Board in System Settings</string>
-    <string name="select_keyboard_prompt">Select Vian Board as Input Method</string>
-</resources>

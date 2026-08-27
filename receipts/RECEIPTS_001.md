@@ -258,6 +258,16 @@
 - **Deviation**: None.
 - **Follow-up**: Export/push repository to GitHub to trigger the release build and download the verified debug APK.
 
+## Entry 026
+- **Timestamp**: 2026-08-27T01:45:00-07:00
+- **Summary**: Added ephemeral debug.keystore generation step in GitHub Actions workflow.
+- **Exact Files Touched**:
+  - `/.github/workflows/build_apk.yml`
+- **What was actually done**: Added an ephemeral `keytool -genkey` step to create `debug.keystore` in the CI runner workspace before `gradle assembleDebug` executes, satisfying the `signingConfigs.debugConfig` file check without committing any keystore secrets to Git.
+- **How it was verified**: Verified via `compile_applet` success.
+- **Deviation**: None.
+- **Follow-up**: Push/export to GitHub to complete the APK compilation and release build.
+
 
 
 
