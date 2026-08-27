@@ -248,6 +248,16 @@
 - **Deviation**: None.
 - **Follow-up**: Export/push to GitHub to build and download the debug APK artifact.
 
+## Entry 025
+- **Timestamp**: 2026-08-27T01:25:00-07:00
+- **Summary**: Upgraded CI Gradle version from 8.7 to 9.3.1 in build_apk.yml to satisfy AGP 9.1.1 requirements.
+- **Exact Files Touched**:
+  - `/.github/workflows/build_apk.yml`
+- **What was actually done**: Aligned the GitHub Actions `setup-gradle@v3` action parameter to `gradle-version: 9.3.1`, resolving the AGP 9.1.1 minimum version check failure.
+- **How it was verified**: Verified via `compile_applet` success.
+- **Deviation**: None.
+- **Follow-up**: Export/push repository to GitHub to trigger the release build and download the verified debug APK.
+
 
 
 
